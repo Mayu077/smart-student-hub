@@ -56,6 +56,32 @@ export interface IStorage {
   }>;
 }
 
+import { MongoStorage } from "./db/mongo-storage";
+import { createIndexes } from "./db/indexes";
+import { connectMongoDB } from "./db/mongodb";
+
+let storageInstance: IStorage | null = null;
+
+export async function getStorage(): Promise<IStorage> {
+  if (storageInstance) {
+    return storageInstance;
+  }
+
+  const storageBackend = process.env.STORAGE_BACKEND || "memory";
+  
+  if (storageBackend === "mongo") {
+    console.log("Initializing MongoDB storage...");
+    const db = await connectMongoDB();
+    await createIndexes(db);
+    storageInstance = new MongoStorage();
+  } else {
+    console.log("Initializing memory storage...");
+    storageInstance = new MemStorage();
+  }
+  
+  return storageInstance;
+}
+
 export class MemStorage implements IStorage {
   private users: Map<string, User> = new Map();
   private activities: Map<string, Activity> = new Map();

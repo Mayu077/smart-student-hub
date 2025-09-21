@@ -1,6 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
+import { getStorage } from "./storage";
 import { generatePortfolio, enhanceActivityDescription } from "./services/openai";
 import { 
   insertActivitySchema, 
@@ -17,6 +17,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       // In a real app, this would come from authentication middleware
       const userId = "current-user";
+      const storage = await getStorage();
       const user = await storage.getUser(userId);
       
       if (!user) {
@@ -34,6 +35,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/dashboard/stats", async (req, res) => {
     try {
       const userId = "current-user";
+      const storage = await getStorage();
       const stats = await storage.getDashboardStats(userId);
       res.json(stats);
     } catch (error) {
@@ -46,6 +48,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/activities", async (req, res) => {
     try {
       const userId = "current-user";
+      const storage = await getStorage();
       const activities = await storage.getActivities(userId);
       res.json(activities);
     } catch (error) {
@@ -57,6 +60,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/activities/recent", async (req, res) => {
     try {
       const userId = "current-user";
+      const storage = await getStorage();
       const limit = parseInt(req.query.limit as string) || 6;
       const activities = await storage.getRecentActivities(userId, limit);
       res.json(activities);
@@ -70,13 +74,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const validatedData = insertActivitySchema.parse(req.body);
       
-      // Convert string dates to Date objects
+      // Convert string dates to Date objects and enforce userId
       const activityData = {
         ...validatedData,
+        userId: "current-user",
         startDate: new Date(validatedData.startDate),
         endDate: validatedData.endDate ? new Date(validatedData.endDate) : null,
       };
 
+      const storage = await getStorage();
       const activity = await storage.createActivity(activityData);
       
       // Optionally enhance description with AI if enabled
@@ -87,7 +93,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
             activity.type,
             activity.provider
           );
-          await storage.updateActivity(activity.id, { description: enhancedDescription });
+          const storage2 = await getStorage();
+          await storage2.updateActivity(activity.id, { description: enhancedDescription });
         } catch (aiError) {
           console.warn("Failed to enhance activity description:", aiError);
           // Continue without AI enhancement
@@ -116,6 +123,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid status" });
       }
 
+      const storage = await getStorage();
       const activity = await storage.updateActivityStatus(id, status, approvedBy);
       
       if (!activity) {
@@ -133,6 +141,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/courses", async (req, res) => {
     try {
       const userId = "current-user";
+      const storage = await getStorage();
       const courses = await storage.getCourses(userId);
       res.json(courses);
     } catch (error) {
@@ -144,7 +153,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/courses", async (req, res) => {
     try {
       const validatedData = insertCourseSchema.parse(req.body);
-      const course = await storage.createCourse(validatedData);
+      const storage = await getStorage();
+      const courseData = { ...validatedData, userId: "current-user" };
+      const course = await storage.createCourse(courseData);
       res.status(201).json(course);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -162,6 +173,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/tasks", async (req, res) => {
     try {
       const userId = "current-user";
+      const storage = await getStorage();
       const tasks = await storage.getTasks(userId);
       res.json(tasks);
     } catch (error) {
@@ -174,6 +186,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = "current-user";
       const limit = parseInt(req.query.limit as string) || 5;
+      const storage = await getStorage();
       const tasks = await storage.getUpcomingTasks(userId, limit);
       res.json(tasks);
     } catch (error) {
@@ -187,8 +200,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validatedData = insertTaskSchema.parse(req.body);
       const taskData = {
         ...validatedData,
+        userId: "current-user",
         dueDate: new Date(validatedData.dueDate),
       };
+      const storage = await getStorage();
       const task = await storage.createTask(taskData);
       res.status(201).json(task);
     } catch (error) {
@@ -208,6 +223,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { id } = req.params;
       const { completed } = req.body;
       
+      const storage = await getStorage();
       const task = await storage.updateTaskStatus(id, completed);
       
       if (!task) {
@@ -225,6 +241,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/portfolios", async (req, res) => {
     try {
       const userId = "current-user";
+      const storage = await getStorage();
       const portfolios = await storage.getPortfolios(userId);
       res.json(portfolios);
     } catch (error) {
@@ -236,7 +253,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/portfolios", async (req, res) => {
     try {
       const validatedData = insertPortfolioSchema.parse(req.body);
-      const portfolio = await storage.createPortfolio(validatedData);
+      const storage = await getStorage();
+      const portfolioData = { ...validatedData, userId: "current-user" };
+      const portfolio = await storage.createPortfolio(portfolioData);
       res.status(201).json(portfolio);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -256,7 +275,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validatedData = insertPortfolioSchema.parse(portfolioData);
       
       // Create portfolio record first
-      const portfolio = await storage.createPortfolio(validatedData);
+      const storage = await getStorage();
+      const portfolioData = { ...validatedData, userId: "current-user" };
+      const portfolio = await storage.createPortfolio(portfolioData);
 
       // Start background generation process
       generatePortfolioAsync(portfolio.id, validatedData, apiKey);
@@ -285,6 +306,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   ) {
     try {
       // Get user data
+      const storage = await getStorage();
       const user = await storage.getUser(portfolioData.userId);
       if (!user) {
         throw new Error("User not found");
@@ -313,7 +335,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }, customApiKey);
 
       // Update portfolio with generated content
-      await storage.updatePortfolio(portfolioId, {
+      const storageForUpdate = await getStorage();
+      await storageForUpdate.updatePortfolio(portfolioId, {
         status: "completed",
         generatedContent: generatedPortfolio.fullContent,
         content: {
@@ -324,7 +347,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     } catch (error) {
       console.error("Portfolio generation failed:", error);
-      await storage.updatePortfolio(portfolioId, {
+      const storageForError = await getStorage();
+      await storageForError.updatePortfolio(portfolioId, {
         status: "error",
         generatedContent: `Generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
       });
@@ -340,6 +364,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const start = startDate ? new Date(startDate as string) : undefined;
       const end = endDate ? new Date(endDate as string) : undefined;
       
+      const storage = await getStorage();
       const studyHours = await storage.getStudyHours(userId, start, end);
       res.json(studyHours);
     } catch (error) {
@@ -355,6 +380,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ...validatedData,
         date: new Date(validatedData.date),
       };
+      const storage = await getStorage();
       const studyHours = await storage.createStudyHours(studyHoursData);
       res.status(201).json(studyHours);
     } catch (error) {
