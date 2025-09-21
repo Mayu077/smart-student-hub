@@ -207,7 +207,16 @@ export function ActivityTrackerModal({ open, onOpenChange }: ActivityTrackerModa
                 <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
                 <p className="text-sm text-muted-foreground">Click to upload or drag and drop</p>
                 <p className="text-xs text-muted-foreground mt-1">PDF, PNG, JPG up to 10MB</p>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  className="mt-3"
+                  onClick={() => document.getElementById('file-upload')?.click()}
+                >
+                  Choose File
+                </Button>
                 <input 
+                  id="file-upload"
                   type="file" 
                   className="hidden" 
                   accept=".pdf,.png,.jpg,.jpeg"

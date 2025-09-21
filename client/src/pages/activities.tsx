@@ -120,7 +120,7 @@ export default function Activities() {
         ) : filteredActivities && filteredActivities.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredActivities.map((activity: any, index: number) => (
-              <GlassmorphismCard key={activity.id || index} className="p-6 hover:shadow-lg transition-all">
+              <GlassmorphismCard key={activity.id || index} className="p-6 hover:shadow-lg hover:scale-[1.02] transition-all duration-200">
                 <div className="space-y-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -156,7 +156,7 @@ export default function Activities() {
                       </span>
                     </div>
                     {activity.fileUrl && (
-                      <Button variant="ghost" size="sm" data-testid={`button-view-document-${index}`}>
+                      <Button variant="ghost" size="sm" className="h-6 w-6 p-0" data-testid={`button-view-document-${index}`}>
                         <ExternalLink className="h-3 w-3" />
                       </Button>
                     )}

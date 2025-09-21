@@ -14,7 +14,7 @@ export function GlassmorphismCard({
   return (
     <div
       className={cn(
-        "rounded-2xl",
+        "rounded-2xl border border-border/50",
         strength === "strong" ? "glassmorphism-strong" : "glassmorphism",
         className
       )}

@@ -42,7 +42,7 @@ function Sidebar() {
   ];
 
   return (
-    <aside className="w-64 glassmorphism-strong border-r p-6 flex flex-col">
+    <aside className="w-64 glassmorphism-strong border-r border-border/50 p-6 flex flex-col min-h-screen">
       <div className="flex items-center gap-3 mb-8">
         <div className="w-10 h-10 gradient-bg rounded-xl flex items-center justify-center">
           <GraduationCap className="h-6 w-6 text-white" />
@@ -87,7 +87,7 @@ function Sidebar() {
         <Button
           onClick={() => setTheme(theme === "light" ? "dark" : "light")}
           variant="ghost"
-          className="w-full justify-center gap-2 glassmorphism hover:bg-sidebar-accent transition-all"
+          className="w-full justify-start gap-2 glassmorphism hover:bg-sidebar-accent transition-all"
           data-testid="button-theme-toggle"
         >
           {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}

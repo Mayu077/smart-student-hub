@@ -66,7 +66,7 @@ export default function Portfolio() {
         ) : portfolios && portfolios.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {portfolios.map((portfolio: any, index: number) => (
-              <GlassmorphismCard key={portfolio.id || index} className="p-6 hover:shadow-lg transition-all">
+              <GlassmorphismCard key={portfolio.id || index} className="p-6 hover:shadow-lg hover:scale-[1.02] transition-all duration-200">
                 <div className="space-y-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -102,7 +102,7 @@ export default function Portfolio() {
                     </div>
                   )}
 
-                  <div className="flex items-center gap-2 pt-2">
+                  <div className="flex items-center gap-2 pt-2 flex-wrap">
                     {portfolio.status === "completed" && (
                       <>
                         <Button size="sm" variant="outline" data-testid={`button-view-portfolio-${index}`}>

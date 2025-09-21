@@ -13,7 +13,7 @@ export function ProgressCircle({
 }: ProgressCircleProps) {
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
-  const strokeDashoffset = circumference - (percentage / 100) * circumference;
+  const strokeDashoffset = circumference - (Math.min(Math.max(percentage, 0), 100) / 100) * circumference;
 
   return (
     <div className="relative" style={{ width: size, height: size }}>
@@ -49,6 +49,7 @@ export function ProgressCircle({
           strokeDashoffset={strokeDashoffset}
           className="progress-circle"
           strokeLinecap="round"
+          style={{ transition: 'stroke-dashoffset 0.5s ease-in-out' }}
         />
       </svg>
       {children && (

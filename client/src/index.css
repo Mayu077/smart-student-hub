@@ -112,12 +112,12 @@
 
 @layer components {
   .glassmorphism {
-    @apply bg-card/80 backdrop-blur-[20px] border border-border/50;
+    @apply bg-card/80 backdrop-blur-[20px];
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   }
 
   .glassmorphism-strong {
-    @apply bg-card/80 backdrop-blur-[40px] border border-border/50;
+    @apply bg-card/90 backdrop-blur-[40px];
     box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
   }
 
@@ -142,7 +142,7 @@
   }
 
   .sidebar-item:hover {
-    @apply bg-sidebar-accent transform translate-x-1;
+    @apply bg-sidebar-accent;
   }
 
   .chart-area {
@@ -154,7 +154,7 @@
   }
 
   .activity-item:hover {
-    @apply bg-muted transform -translate-y-0.5 shadow-lg;
+    @apply bg-muted/50;
   }
 
   @keyframes pulse {
@@ -164,5 +164,19 @@
 
   .loading-pulse {
     animation: pulse 2s infinite;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-4 {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 }

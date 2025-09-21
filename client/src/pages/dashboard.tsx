@@ -107,7 +107,10 @@ export default function Dashboard() {
                     style={{ width: `${stats?.currentCourse?.progress || 0}%` }}
                   ></div>
                 </div>
-                <Button data-testid="button-continue-lesson">
+                <Button 
+                  disabled={!stats?.currentCourse}
+                  data-testid="button-continue-lesson"
+                >
                   Continue Lesson
                 </Button>
               </div>
@@ -170,7 +173,7 @@ export default function Dashboard() {
             <div className="space-y-4">
               {tasks && tasks.length > 0 ? (
                 tasks.slice(0, 3).map((task: any, index: number) => (
-                  <div key={task.id || index} className="activity-item flex items-center gap-4 p-3 rounded-lg">
+                  <div key={task.id || index} className="activity-item flex items-center gap-4 p-3 rounded-lg border border-border/30 hover:border-border/60 transition-colors">
                     <Button
                       variant="ghost"
                       size="sm"
@@ -195,7 +198,7 @@ export default function Dashboard() {
                       <p className="text-sm font-medium" data-testid={`text-task-due-${index}`}>
                         {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : "No due date"}
                       </p>
-                      <span className={`inline-block w-2 h-2 rounded-full ${
+                      <span className={`inline-block w-2 h-2 rounded-full mt-1 ${
                         task.completed ? 'bg-secondary' : 'bg-destructive'
                       }`}></span>
                     </div>
@@ -221,7 +224,7 @@ export default function Dashboard() {
             </div>
 
             <div className="relative h-48 mb-4">
-              <svg className="w-full h-full" viewBox="0 0 300 150">
+              <svg className="w-full h-full" viewBox="0 0 300 150" preserveAspectRatio="xMidYMid meet">
                 <defs>
                   <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
                     <stop offset="0%" className="[stop-color:hsl(var(--secondary))]" stopOpacity="0.3"/>
@@ -280,7 +283,7 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {activities && activities.length > 0 ? (
               activities.slice(0, 6).map((activity: any, index: number) => (
-                <div key={activity.id || index} className="activity-item border border-border rounded-xl p-4 hover:shadow-lg transition-all">
+                <div key={activity.id || index} className="activity-item border border-border/50 rounded-xl p-4 hover:shadow-lg hover:border-border transition-all">
                   <div className="flex items-start gap-3">
                     <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
                       {getActivityIcon(activity.type)}
