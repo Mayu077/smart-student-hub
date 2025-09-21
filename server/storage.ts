@@ -19,33 +19,39 @@ export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  createUserWithId(id: string, user: InsertUser): Promise<User>;
   
   // Activity methods
   getActivities(userId: string): Promise<Activity[]>;
   getRecentActivities(userId: string, limit?: number): Promise<Activity[]>;
   createActivity(activity: InsertActivity): Promise<Activity>;
+  createActivityWithId(id: string, activity: InsertActivity): Promise<Activity>;
   updateActivity(id: string, updates: Partial<Activity>): Promise<Activity | undefined>;
   updateActivityStatus(id: string, status: string, approvedBy?: string): Promise<Activity | undefined>;
   
   // Course methods
   getCourses(userId: string): Promise<Course[]>;
   createCourse(course: InsertCourse): Promise<Course>;
+  createCourseWithId(id: string, course: InsertCourse): Promise<Course>;
   updateCourseProgress(id: string, progress: number): Promise<Course | undefined>;
   
   // Task methods
   getTasks(userId: string): Promise<Task[]>;
   getUpcomingTasks(userId: string, limit?: number): Promise<Task[]>;
   createTask(task: InsertTask): Promise<Task>;
+  createTaskWithId(id: string, task: InsertTask): Promise<Task>;
   updateTaskStatus(id: string, completed: boolean): Promise<Task | undefined>;
   
   // Portfolio methods
   getPortfolios(userId: string): Promise<Portfolio[]>;
   createPortfolio(portfolio: InsertPortfolio): Promise<Portfolio>;
+  createPortfolioWithId(id: string, portfolio: InsertPortfolio): Promise<Portfolio>;
   updatePortfolio(id: string, updates: Partial<Portfolio>): Promise<Portfolio | undefined>;
   
   // Study Hours methods
   getStudyHours(userId: string, startDate?: Date, endDate?: Date): Promise<StudyHours[]>;
   createStudyHours(studyHours: InsertStudyHours): Promise<StudyHours>;
+  createStudyHoursWithId(id: string, studyHours: InsertStudyHours): Promise<StudyHours>;
   
   // Dashboard stats
   getDashboardStats(userId: string): Promise<{
@@ -57,8 +63,11 @@ export interface IStorage {
 }
 
 import { MongoStorage } from "./db/mongo-storage";
+import { FirebaseStorage } from "./db/firebase-storage";
+import { DualStorage, type DualStorageOptions } from "./db/dual-storage";
 import { createIndexes } from "./db/indexes";
 import { connectMongoDB } from "./db/mongodb";
+import { initializeFirebase } from "./db/firebase";
 
 let storageInstance: IStorage | null = null;
 
@@ -74,6 +83,28 @@ export async function getStorage(): Promise<IStorage> {
     const db = await connectMongoDB();
     await createIndexes(db);
     storageInstance = new MongoStorage();
+  } else if (storageBackend === "firebase") {
+    console.log("Initializing Firebase storage...");
+    await initializeFirebase();
+    storageInstance = new FirebaseStorage();
+  } else if (storageBackend === "dual") {
+    console.log("Initializing dual storage (MongoDB + Firebase)...");
+    
+    // Initialize both databases
+    const db = await connectMongoDB();
+    await createIndexes(db);
+    await initializeFirebase();
+    
+    // Configure dual storage options
+    const dualOptions: Partial<DualStorageOptions> = {
+      primaryStorage: (process.env.DUAL_PRIMARY_STORAGE as "mongo" | "firebase") || "mongo",
+      enableSync: process.env.DUAL_ENABLE_SYNC !== "false",
+      fallbackOnError: process.env.DUAL_FALLBACK_ON_ERROR !== "false",
+      syncDirection: (process.env.DUAL_SYNC_DIRECTION as any) || "bidirectional"
+    };
+    
+    storageInstance = new DualStorage(dualOptions);
+    console.log("Dual storage initialized with options:", dualOptions);
   } else {
     console.log("Initializing memory storage...");
     storageInstance = new MemStorage();
@@ -238,6 +269,20 @@ export class MemStorage implements IStorage {
     return user;
   }
 
+  async createUserWithId(id: string, insertUser: InsertUser): Promise<User> {
+    const user: User = { 
+      ...insertUser, 
+      id,
+      gpa: "0.0",
+      totalCredits: 0,
+      completedCredits: 0,
+      attendance: 0,
+      createdAt: new Date(),
+    };
+    this.users.set(id, user);
+    return user;
+  }
+
   // Activity methods
   async getActivities(userId: string): Promise<Activity[]> {
     return Array.from(this.activities.values())
@@ -252,6 +297,22 @@ export class MemStorage implements IStorage {
 
   async createActivity(insertActivity: InsertActivity): Promise<Activity> {
     const id = randomUUID();
+    const activity: Activity = {
+      ...insertActivity,
+      id,
+      status: "pending",
+      description: insertActivity.description || null,
+      endDate: insertActivity.endDate || null,
+      fileUrl: null,
+      userId: insertActivity.userId || null,
+      approvedBy: null,
+      createdAt: new Date(),
+    };
+    this.activities.set(id, activity);
+    return activity;
+  }
+
+  async createActivityWithId(id: string, insertActivity: InsertActivity): Promise<Activity> {
     const activity: Activity = {
       ...insertActivity,
       id,
@@ -309,6 +370,21 @@ export class MemStorage implements IStorage {
     return course;
   }
 
+  async createCourseWithId(id: string, insertCourse: InsertCourse): Promise<Course> {
+    const course: Course = {
+      ...insertCourse,
+      id,
+      description: insertCourse.description || null,
+      userId: insertCourse.userId || null,
+      credits: insertCourse.credits || null,
+      progress: insertCourse.progress || null,
+      isActive: insertCourse.isActive || null,
+      createdAt: new Date(),
+    };
+    this.courses.set(id, course);
+    return course;
+  }
+
   async updateCourseProgress(id: string, progress: number): Promise<Course | undefined> {
     const course = this.courses.get(id);
     if (course) {
@@ -336,6 +412,20 @@ export class MemStorage implements IStorage {
 
   async createTask(insertTask: InsertTask): Promise<Task> {
     const id = randomUUID();
+    const task: Task = {
+      ...insertTask,
+      id,
+      description: insertTask.description || null,
+      userId: insertTask.userId || null,
+      completed: insertTask.completed || null,
+      courseId: insertTask.courseId || null,
+      createdAt: new Date(),
+    };
+    this.tasks.set(id, task);
+    return task;
+  }
+
+  async createTaskWithId(id: string, insertTask: InsertTask): Promise<Task> {
     const task: Task = {
       ...insertTask,
       id,
@@ -382,6 +472,21 @@ export class MemStorage implements IStorage {
     return portfolio;
   }
 
+  async createPortfolioWithId(id: string, insertPortfolio: InsertPortfolio): Promise<Portfolio> {
+    const portfolio: Portfolio = {
+      ...insertPortfolio,
+      id,
+      status: "draft",
+      generatedContent: null,
+      userId: insertPortfolio.userId || null,
+      targetField: insertPortfolio.targetField || null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.portfolios.set(id, portfolio);
+    return portfolio;
+  }
+
   async updatePortfolio(id: string, updates: Partial<Portfolio>): Promise<Portfolio | undefined> {
     const portfolio = this.portfolios.get(id);
     if (portfolio) {
@@ -409,6 +514,17 @@ export class MemStorage implements IStorage {
 
   async createStudyHours(insertStudyHours: InsertStudyHours): Promise<StudyHours> {
     const id = randomUUID();
+    const studyHours: StudyHours = {
+      ...insertStudyHours,
+      id,
+      userId: insertStudyHours.userId || null,
+      createdAt: new Date(),
+    };
+    this.studyHours.set(id, studyHours);
+    return studyHours;
+  }
+
+  async createStudyHoursWithId(id: string, insertStudyHours: InsertStudyHours): Promise<StudyHours> {
     const studyHours: StudyHours = {
       ...insertStudyHours,
       id,

@@ -33,7 +33,7 @@ export class MongoStorage implements IStorage {
     const user = await db.collection("users").findOne({ id });
     if (!user) return undefined;
     
-    const { _id, ...rest } = user;
+    const { _id, ...rest } = user as any;
     return rest as User;
   }
 
@@ -42,7 +42,7 @@ export class MongoStorage implements IStorage {
     const user = await db.collection("users").findOne({ username });
     if (!user) return undefined;
     
-    const { _id, ...rest } = user;
+    const { _id, ...rest } = user as any;
     return rest as User;
   }
 
@@ -56,7 +56,20 @@ export class MongoStorage implements IStorage {
     };
     
     await db.collection("users").insertOne(newUser);
-    const { _id, ...rest } = newUser;
+    const { _id, ...rest } = newUser as any;
+    return rest as User;
+  }
+
+  async createUserWithId(id: string, user: InsertUser): Promise<User> {
+    const db = await this.getDb();
+    const newUser = {
+      id,
+      ...user,
+      createdAt: new Date(),
+    };
+    
+    await db.collection("users").insertOne(newUser);
+    const { _id, ...rest } = newUser as any;
     return rest as User;
   }
 
@@ -69,7 +82,7 @@ export class MongoStorage implements IStorage {
       .toArray();
     
     return activities.map(doc => {
-      const { _id, ...rest } = doc;
+      const { _id, ...rest } = doc as any;
       return rest as Activity;
     });
   }
@@ -83,7 +96,7 @@ export class MongoStorage implements IStorage {
       .toArray();
     
     return activities.map(doc => {
-      const { _id, ...rest } = doc;
+      const { _id, ...rest } = doc as any;
       return rest as Activity;
     });
   }
@@ -91,6 +104,20 @@ export class MongoStorage implements IStorage {
   async createActivity(activity: InsertActivity): Promise<Activity> {
     const db = await this.getDb();
     const id = randomUUID();
+    const newActivity = {
+      id,
+      ...activity,
+      status: "pending",
+      createdAt: new Date(),
+    };
+    
+    await db.collection("activities").insertOne(newActivity);
+    const { _id, ...rest } = newActivity;
+    return rest as Activity;
+  }
+
+  async createActivityWithId(id: string, activity: InsertActivity): Promise<Activity> {
+    const db = await this.getDb();
     const newActivity = {
       id,
       ...activity,
@@ -145,7 +172,7 @@ export class MongoStorage implements IStorage {
       .toArray();
     
     return courses.map(doc => {
-      const { _id, ...rest } = doc;
+      const { _id, ...rest } = doc as any;
       return rest as Course;
     });
   }
@@ -153,6 +180,19 @@ export class MongoStorage implements IStorage {
   async createCourse(course: InsertCourse): Promise<Course> {
     const db = await this.getDb();
     const id = randomUUID();
+    const newCourse = {
+      id,
+      ...course,
+      createdAt: new Date(),
+    };
+    
+    await db.collection("courses").insertOne(newCourse);
+    const { _id, ...rest } = newCourse;
+    return rest as Course;
+  }
+
+  async createCourseWithId(id: string, course: InsertCourse): Promise<Course> {
+    const db = await this.getDb();
     const newCourse = {
       id,
       ...course,
@@ -186,7 +226,7 @@ export class MongoStorage implements IStorage {
       .toArray();
     
     return tasks.map(doc => {
-      const { _id, ...rest } = doc;
+      const { _id, ...rest } = doc as any;
       return rest as Task;
     });
   }
@@ -204,7 +244,7 @@ export class MongoStorage implements IStorage {
       .toArray();
     
     return tasks.map(doc => {
-      const { _id, ...rest } = doc;
+      const { _id, ...rest } = doc as any;
       return rest as Task;
     });
   }
@@ -212,6 +252,19 @@ export class MongoStorage implements IStorage {
   async createTask(task: InsertTask): Promise<Task> {
     const db = await this.getDb();
     const id = randomUUID();
+    const newTask = {
+      id,
+      ...task,
+      createdAt: new Date(),
+    };
+    
+    await db.collection("tasks").insertOne(newTask);
+    const { _id, ...rest } = newTask;
+    return rest as Task;
+  }
+
+  async createTaskWithId(id: string, task: InsertTask): Promise<Task> {
+    const db = await this.getDb();
     const newTask = {
       id,
       ...task,
@@ -245,7 +298,7 @@ export class MongoStorage implements IStorage {
       .toArray();
     
     return portfolios.map(doc => {
-      const { _id, ...rest } = doc;
+      const { _id, ...rest } = doc as any;
       return rest as Portfolio;
     });
   }
@@ -253,6 +306,21 @@ export class MongoStorage implements IStorage {
   async createPortfolio(portfolio: InsertPortfolio): Promise<Portfolio> {
     const db = await this.getDb();
     const id = randomUUID();
+    const newPortfolio = {
+      id,
+      ...portfolio,
+      status: "draft",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    
+    await db.collection("portfolios").insertOne(newPortfolio);
+    const { _id, ...rest } = newPortfolio;
+    return rest as Portfolio;
+  }
+
+  async createPortfolioWithId(id: string, portfolio: InsertPortfolio): Promise<Portfolio> {
+    const db = await this.getDb();
     const newPortfolio = {
       id,
       ...portfolio,
@@ -299,7 +367,7 @@ export class MongoStorage implements IStorage {
       .toArray();
     
     return studyHours.map(doc => {
-      const { _id, ...rest } = doc;
+      const { _id, ...rest } = doc as any;
       return rest as StudyHours;
     });
   }
@@ -307,6 +375,19 @@ export class MongoStorage implements IStorage {
   async createStudyHours(studyHours: InsertStudyHours): Promise<StudyHours> {
     const db = await this.getDb();
     const id = randomUUID();
+    const newStudyHours = {
+      id,
+      ...studyHours,
+      createdAt: new Date(),
+    };
+    
+    await db.collection("study_hours").insertOne(newStudyHours);
+    const { _id, ...rest } = newStudyHours;
+    return rest as StudyHours;
+  }
+
+  async createStudyHoursWithId(id: string, studyHours: InsertStudyHours): Promise<StudyHours> {
+    const db = await this.getDb();
     const newStudyHours = {
       id,
       ...studyHours,

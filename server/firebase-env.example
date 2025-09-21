@@ -1,0 +1,53 @@
+# Firebase Configuration Environment Variables
+# Copy this file to your .env or set these environment variables in your Replit Secrets
+
+# Storage Backend Selection
+# Options: "memory", "mongo", "firebase", "dual"
+STORAGE_BACKEND=firebase
+
+# Firebase Project Configuration (Required for firebase and dual storage)
+FIREBASE_PROJECT_ID=your-project-id
+FIREBASE_API_KEY=your-api-key
+FIREBASE_AUTH_DOMAIN=your-project-id.firebaseapp.com
+FIREBASE_APP_ID=your-app-id
+FIREBASE_STORAGE_BUCKET=your-project-id.appspot.com
+FIREBASE_MESSAGING_SENDER_ID=your-sender-id
+
+# Firebase Service Account Key (Optional - can use default credentials in production)
+# This should be the entire JSON service account key as a string
+FIREBASE_SERVICE_ACCOUNT_KEY={"type":"service_account","project_id":"..."}
+
+# Firebase Emulator (Development only)
+# FIREBASE_EMULATOR_HOST=localhost:8080
+
+# MongoDB Configuration (Required for mongo and dual storage)
+MONGODB_URI=mongodb://localhost:27017/smart_student_hub
+DB_NAME=smart_student_hub
+
+# Dual Storage Configuration (When STORAGE_BACKEND=dual)
+DUAL_PRIMARY_STORAGE=mongo          # Options: "mongo" or "firebase"
+DUAL_ENABLE_SYNC=true               # Enable automatic sync between databases
+DUAL_FALLBACK_ON_ERROR=true         # Fallback to secondary storage on error
+DUAL_SYNC_DIRECTION=bidirectional   # Options: "bidirectional", "mongo-to-firebase", "firebase-to-mongo"
+
+# Usage Examples:
+# 1. Memory only (default for development):
+#    STORAGE_BACKEND=memory
+#
+# 2. MongoDB only:
+#    STORAGE_BACKEND=mongo
+#    MONGODB_URI=your-mongodb-connection-string
+#
+# 3. Firebase only:
+#    STORAGE_BACKEND=firebase
+#    FIREBASE_PROJECT_ID=your-project-id
+#    FIREBASE_API_KEY=your-api-key
+#    # ... other Firebase config
+#
+# 4. Dual storage (MongoDB + Firebase):
+#    STORAGE_BACKEND=dual
+#    MONGODB_URI=your-mongodb-connection-string
+#    FIREBASE_PROJECT_ID=your-project-id
+#    # ... both MongoDB and Firebase config
+#    DUAL_PRIMARY_STORAGE=mongo
+#    DUAL_ENABLE_SYNC=true
