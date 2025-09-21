@@ -276,8 +276,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create portfolio record first
       const storage = await getStorage();
-      const portfolioData = { ...validatedData, userId: "current-user" };
-      const portfolio = await storage.createPortfolio(portfolioData);
+      const portfolioDataForStorage = { ...validatedData, userId: "current-user" };
+      const portfolio = await storage.createPortfolio(portfolioDataForStorage);
 
       // Start background generation process
       generatePortfolioAsync(portfolio.id, validatedData, apiKey);
