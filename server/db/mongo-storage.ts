@@ -1,4 +1,4 @@
-import { Db } from "mongodb";
+import { Db, Collection } from "mongodb";
 import { 
   type User, 
   type InsertUser,
@@ -30,11 +30,11 @@ export class MongoStorage implements IStorage {
   // User methods
   async getUser(id: string): Promise<User | undefined> {
     const db = await this.getDb();
-    const user = await db.collection("users").findOne({ _id: id });
+    const user = await db.collection("users").findOne({ id });
     if (!user) return undefined;
     
     const { _id, ...rest } = user;
-    return { ...rest, id: _id } as User;
+    return rest as User;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
@@ -43,21 +43,21 @@ export class MongoStorage implements IStorage {
     if (!user) return undefined;
     
     const { _id, ...rest } = user;
-    return { ...rest, id: _id } as User;
+    return rest as User;
   }
 
   async createUser(user: InsertUser): Promise<User> {
     const db = await this.getDb();
     const id = randomUUID();
     const newUser = {
-      _id: id,
+      id,
       ...user,
       createdAt: new Date(),
     };
     
     await db.collection("users").insertOne(newUser);
     const { _id, ...rest } = newUser;
-    return { ...rest, id: _id } as User;
+    return rest as User;
   }
 
   // Activity methods
@@ -70,7 +70,7 @@ export class MongoStorage implements IStorage {
     
     return activities.map(doc => {
       const { _id, ...rest } = doc;
-      return { ...rest, id: _id } as Activity;
+      return rest as Activity;
     });
   }
 
@@ -84,7 +84,7 @@ export class MongoStorage implements IStorage {
     
     return activities.map(doc => {
       const { _id, ...rest } = doc;
-      return { ...rest, id: _id } as Activity;
+      return rest as Activity;
     });
   }
 
@@ -92,7 +92,7 @@ export class MongoStorage implements IStorage {
     const db = await this.getDb();
     const id = randomUUID();
     const newActivity = {
-      _id: id,
+      id,
       ...activity,
       status: "pending",
       createdAt: new Date(),
@@ -100,7 +100,7 @@ export class MongoStorage implements IStorage {
     
     await db.collection("activities").insertOne(newActivity);
     const { _id, ...rest } = newActivity;
-    return { ...rest, id: _id } as Activity;
+    return rest as Activity;
   }
 
   async updateActivity(id: string, updates: Partial<Activity>): Promise<Activity | undefined> {
@@ -108,14 +108,14 @@ export class MongoStorage implements IStorage {
     const { id: _, ...updateFields } = updates;
     
     const result = await db.collection("activities").findOneAndUpdate(
-      { _id: id },
+      { id },
       { $set: updateFields },
       { returnDocument: "after" }
     );
     
     if (!result || !result.value) return undefined;
     const { _id, ...rest } = result.value as any;
-    return { ...rest, id: _id } as Activity;
+    return rest as Activity;
   }
 
   async updateActivityStatus(id: string, status: string, approvedBy?: string): Promise<Activity | undefined> {
@@ -126,14 +126,14 @@ export class MongoStorage implements IStorage {
     }
     
     const result = await db.collection("activities").findOneAndUpdate(
-      { _id: id },
+      { id },
       { $set: updateFields },
       { returnDocument: "after" }
     );
     
     if (!result || !result.value) return undefined;
     const { _id, ...rest } = result.value as any;
-    return { ...rest, id: _id } as Activity;
+    return rest as Activity;
   }
 
   // Course methods
@@ -146,7 +146,7 @@ export class MongoStorage implements IStorage {
     
     return courses.map(doc => {
       const { _id, ...rest } = doc;
-      return { ...rest, id: _id } as Course;
+      return rest as Course;
     });
   }
 
@@ -154,27 +154,27 @@ export class MongoStorage implements IStorage {
     const db = await this.getDb();
     const id = randomUUID();
     const newCourse = {
-      _id: id,
+      id,
       ...course,
       createdAt: new Date(),
     };
     
     await db.collection("courses").insertOne(newCourse);
     const { _id, ...rest } = newCourse;
-    return { ...rest, id: _id } as Course;
+    return rest as Course;
   }
 
   async updateCourseProgress(id: string, progress: number): Promise<Course | undefined> {
     const db = await this.getDb();
     const result = await db.collection("courses").findOneAndUpdate(
-      { _id: id },
+      { id },
       { $set: { progress } },
       { returnDocument: "after" }
     );
     
     if (!result || !result.value) return undefined;
     const { _id, ...rest } = result.value as any;
-    return { ...rest, id: _id } as Course;
+    return rest as Course;
   }
 
   // Task methods
@@ -187,7 +187,7 @@ export class MongoStorage implements IStorage {
     
     return tasks.map(doc => {
       const { _id, ...rest } = doc;
-      return { ...rest, id: _id } as Task;
+      return rest as Task;
     });
   }
 
@@ -205,7 +205,7 @@ export class MongoStorage implements IStorage {
     
     return tasks.map(doc => {
       const { _id, ...rest } = doc;
-      return { ...rest, id: _id } as Task;
+      return rest as Task;
     });
   }
 
@@ -213,27 +213,27 @@ export class MongoStorage implements IStorage {
     const db = await this.getDb();
     const id = randomUUID();
     const newTask = {
-      _id: id,
+      id,
       ...task,
       createdAt: new Date(),
     };
     
     await db.collection("tasks").insertOne(newTask);
     const { _id, ...rest } = newTask;
-    return { ...rest, id: _id } as Task;
+    return rest as Task;
   }
 
   async updateTaskStatus(id: string, completed: boolean): Promise<Task | undefined> {
     const db = await this.getDb();
     const result = await db.collection("tasks").findOneAndUpdate(
-      { _id: id },
+      { id },
       { $set: { completed } },
       { returnDocument: "after" }
     );
     
     if (!result || !result.value) return undefined;
     const { _id, ...rest } = result.value as any;
-    return { ...rest, id: _id } as Task;
+    return rest as Task;
   }
 
   // Portfolio methods
@@ -246,7 +246,7 @@ export class MongoStorage implements IStorage {
     
     return portfolios.map(doc => {
       const { _id, ...rest } = doc;
-      return { ...rest, id: _id } as Portfolio;
+      return rest as Portfolio;
     });
   }
 
@@ -254,7 +254,7 @@ export class MongoStorage implements IStorage {
     const db = await this.getDb();
     const id = randomUUID();
     const newPortfolio = {
-      _id: id,
+      id,
       ...portfolio,
       status: "draft",
       createdAt: new Date(),
@@ -263,7 +263,7 @@ export class MongoStorage implements IStorage {
     
     await db.collection("portfolios").insertOne(newPortfolio);
     const { _id, ...rest } = newPortfolio;
-    return { ...rest, id: _id } as Portfolio;
+    return rest as Portfolio;
   }
 
   async updatePortfolio(id: string, updates: Partial<Portfolio>): Promise<Portfolio | undefined> {
@@ -272,14 +272,14 @@ export class MongoStorage implements IStorage {
     updateFields.updatedAt = new Date();
     
     const result = await db.collection("portfolios").findOneAndUpdate(
-      { _id: id },
+      { id },
       { $set: updateFields },
       { returnDocument: "after" }
     );
     
     if (!result || !result.value) return undefined;
     const { _id, ...rest } = result.value as any;
-    return { ...rest, id: _id } as Portfolio;
+    return rest as Portfolio;
   }
 
   // Study Hours methods
@@ -300,7 +300,7 @@ export class MongoStorage implements IStorage {
     
     return studyHours.map(doc => {
       const { _id, ...rest } = doc;
-      return { ...rest, id: _id } as StudyHours;
+      return rest as StudyHours;
     });
   }
 
@@ -308,14 +308,14 @@ export class MongoStorage implements IStorage {
     const db = await this.getDb();
     const id = randomUUID();
     const newStudyHours = {
-      _id: id,
+      id,
       ...studyHours,
       createdAt: new Date(),
     };
     
     await db.collection("study_hours").insertOne(newStudyHours);
     const { _id, ...rest } = newStudyHours;
-    return { ...rest, id: _id } as StudyHours;
+    return rest as StudyHours;
   }
 
   // Dashboard stats
