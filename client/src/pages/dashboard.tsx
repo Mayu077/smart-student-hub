@@ -318,7 +318,7 @@ export default function Dashboard() {
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Button
+          <GlassmorphismCard
             variant="ghost"
             className="glassmorphism rounded-xl p-6 text-left hover:shadow-lg transition-all group h-auto justify-start flex-col items-start min-h-[140px]"
             onClick={() => setPortfolioModalOpen(true)}
@@ -331,9 +331,9 @@ export default function Dashboard() {
               <h4 className="font-semibold mb-2 text-left">Generate Portfolio</h4>
               <p className="text-sm text-muted-foreground text-left leading-relaxed">Create AI-powered portfolio from your activities</p>
             </div>
-          </Button>
+          </GlassmorphismCard>
 
-          <Button
+          <GlassmorphismCard
             variant="ghost"
             className="glassmorphism rounded-xl p-6 text-left hover:shadow-lg transition-all group h-auto justify-start flex-col items-start min-h-[140px]"
             data-testid="button-view-analytics"
@@ -345,9 +345,9 @@ export default function Dashboard() {
               <h4 className="font-semibold mb-2 text-left">View Analytics</h4>
               <p className="text-sm text-muted-foreground text-left leading-relaxed">Detailed insights into your academic progress</p>
             </div>
-          </Button>
+          </GlassmorphismCard>
 
-          <Button
+          <GlassmorphismCard
             variant="ghost"
             className="glassmorphism rounded-xl p-6 text-left hover:shadow-lg transition-all group h-auto justify-start flex-col items-start min-h-[140px]"
             data-testid="button-schedule-event"
@@ -359,7 +359,7 @@ export default function Dashboard() {
               <h4 className="font-semibold mb-2 text-left">Schedule Event</h4>
               <p className="text-sm text-muted-foreground text-left leading-relaxed">Add upcoming conferences or workshops</p>
             </div>
-          </Button>
+          </GlassmorphismCard>
 
           <GlassmorphismCard
             variant="ghost"
