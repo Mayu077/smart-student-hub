@@ -361,7 +361,7 @@ export default function Dashboard() {
             </div>
           </Button>
 
-          <Button
+          <GlassmorphismCard
             variant="ghost"
             className="glassmorphism rounded-xl p-6 text-left hover:shadow-lg transition-all group h-auto justify-start flex-col items-start min-h-[140px]"
             data-testid="button-export-records"
@@ -373,7 +373,7 @@ export default function Dashboard() {
               <h4 className="font-semibold mb-2 text-left">Export Records</h4>
               <p className="text-sm text-muted-foreground text-left leading-relaxed">Download verified academic records</p>
             </div>
-          </Button>
+          </GlassmorphismCard>
         </div>
       </div>
 
