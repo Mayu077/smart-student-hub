@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 type Theme = "dark" | "light" | "system";
 
@@ -15,7 +15,7 @@ type ThemeProviderState = {
 
 const initialState: ThemeProviderState = {
   theme: "system",
-  setTheme: () => null,
+  setTheme: () => undefined,
 };
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
@@ -24,45 +24,69 @@ export function ThemeProvider({
   children,
   defaultTheme = "system",
   storageKey = "ui-theme",
-  ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window !== "undefined") {
-      return (localStorage.getItem(storageKey) as Theme) || defaultTheme;
-    }
+  const readStored = (): Theme => {
+    if (typeof window === "undefined") return defaultTheme;
+    const raw = localStorage.getItem(storageKey);
+    if (raw === "dark" || raw === "light" || raw === "system") return raw;
     return defaultTheme;
-  });
+  };
 
-  useEffect(() => {
+  const [theme, setTheme] = useState<Theme>(readStored);
+
+  // robust apply function
+  const applyThemeToRoot = (t: Theme) => {
     const root = window.document.documentElement;
     root.classList.remove("light", "dark");
-
-    if (theme === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light";
-      root.classList.add(systemTheme);
+    if (t === "system") {
+      const sys = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      root.classList.add(sys);
+      console.debug("[Theme] applied system ->", sys);
       return;
     }
+    root.classList.add(t);
+    console.debug("[Theme] applied ->", t);
+  };
 
-    root.classList.add(theme);
-  }, [theme]);
+  useEffect(() => {
+    // apply at mount and when theme changes
+    applyThemeToRoot(theme);
 
+    // keep storage in sync
+    try {
+      localStorage.setItem(storageKey, theme);
+    } catch (e) {
+      console.warn("[Theme] localStorage write failed", e);
+    }
+
+    // listen for system changes if theme === system
+    const mql = window.matchMedia("(prefers-color-scheme: dark)");
+    const onChange = () => {
+      if (theme === "system") {
+        applyThemeToRoot("system");
+      }
+    };
+    // support both addEventListener & addListener for older env
+    if (mql.addEventListener) mql.addEventListener("change", onChange);
+    else mql.addListener(onChange);
+
+    return () => {
+      if (mql.removeEventListener) mql.removeEventListener("change", onChange);
+      else mql.removeListener(onChange);
+    };
+  }, [theme, storageKey]);
+
+  // exposed setter that updates state + storage (already done in effect but keep setter safe)
   const setThemeAndStore = (newTheme: Theme) => {
-    localStorage.setItem(storageKey, newTheme);
     setTheme(newTheme);
+    try {
+      localStorage.setItem(storageKey, newTheme);
+    } catch (e) {}
   };
 
-  const value: ThemeProviderState = {
-    theme,
-    setTheme: setThemeAndStore,
-  };
+  const value: ThemeProviderState = { theme, setTheme: setThemeAndStore };
 
-  return (
-    <ThemeProviderContext.Provider value={value} {...props}>
-      {children}
-    </ThemeProviderContext.Provider>
-  );
+  return <ThemeProviderContext.Provider value={value}>{children}</ThemeProviderContext.Provider>;
 }
 
 export const useTheme = () => {
