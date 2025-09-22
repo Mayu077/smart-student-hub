@@ -72,7 +72,7 @@ export function ActivityTrackerModal({ open, onOpenChange }: ActivityTrackerModa
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="glassmorphism-strong max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="glassmorphism-strong max-w-2xl max-h-[90vh] overflow-y-auto bg-background border">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">Add New Activity</DialogTitle>
         </DialogHeader>

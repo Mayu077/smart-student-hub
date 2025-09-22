@@ -320,58 +320,58 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Button
             variant="ghost"
-            className="glassmorphism rounded-xl p-6 text-left hover:shadow-lg transition-all group h-auto justify-start"
+            className="glassmorphism rounded-xl p-6 text-left hover:shadow-lg transition-all group h-auto justify-start flex-col items-start min-h-[140px]"
             onClick={() => setPortfolioModalOpen(true)}
             data-testid="button-generate-portfolio"
           >
-            <div>
+            <div className="w-full">
               <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <UserCircle className="h-6 w-6 text-white" />
               </div>
-              <h4 className="font-semibold mb-2">Generate Portfolio</h4>
-              <p className="text-sm text-muted-foreground">Create AI-powered portfolio from your activities</p>
+              <h4 className="font-semibold mb-2 text-left">Generate Portfolio</h4>
+              <p className="text-sm text-muted-foreground text-left leading-relaxed">Create AI-powered portfolio from your activities</p>
             </div>
           </Button>
 
           <Button
             variant="ghost"
-            className="glassmorphism rounded-xl p-6 text-left hover:shadow-lg transition-all group h-auto justify-start"
+            className="glassmorphism rounded-xl p-6 text-left hover:shadow-lg transition-all group h-auto justify-start flex-col items-start min-h-[140px]"
             data-testid="button-view-analytics"
           >
-            <div>
+            <div className="w-full">
               <div className="w-12 h-12 bg-gradient-to-br from-accent to-primary rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <BarChart3 className="h-6 w-6 text-white" />
               </div>
-              <h4 className="font-semibold mb-2">View Analytics</h4>
-              <p className="text-sm text-muted-foreground">Detailed insights into your academic progress</p>
+              <h4 className="font-semibold mb-2 text-left">View Analytics</h4>
+              <p className="text-sm text-muted-foreground text-left leading-relaxed">Detailed insights into your academic progress</p>
             </div>
           </Button>
 
           <Button
             variant="ghost"
-            className="glassmorphism rounded-xl p-6 text-left hover:shadow-lg transition-all group h-auto justify-start"
+            className="glassmorphism rounded-xl p-6 text-left hover:shadow-lg transition-all group h-auto justify-start flex-col items-start min-h-[140px]"
             data-testid="button-schedule-event"
           >
-            <div>
+            <div className="w-full">
               <div className="w-12 h-12 bg-gradient-to-br from-secondary to-accent rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <CalendarPlus className="h-6 w-6 text-white" />
               </div>
-              <h4 className="font-semibold mb-2">Schedule Event</h4>
-              <p className="text-sm text-muted-foreground">Add upcoming conferences or workshops</p>
+              <h4 className="font-semibold mb-2 text-left">Schedule Event</h4>
+              <p className="text-sm text-muted-foreground text-left leading-relaxed">Add upcoming conferences or workshops</p>
             </div>
           </Button>
 
           <Button
             variant="ghost"
-            className="glassmorphism rounded-xl p-6 text-left hover:shadow-lg transition-all group h-auto justify-start"
+            className="glassmorphism rounded-xl p-6 text-left hover:shadow-lg transition-all group h-auto justify-start flex-col items-start min-h-[140px]"
             data-testid="button-export-records"
           >
-            <div>
+            <div className="w-full">
               <div className="w-12 h-12 bg-gradient-to-br from-chart-4 to-secondary rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <Download className="h-6 w-6 text-white" />
               </div>
-              <h4 className="font-semibold mb-2">Export Records</h4>
-              <p className="text-sm text-muted-foreground">Download verified academic records</p>
+              <h4 className="font-semibold mb-2 text-left">Export Records</h4>
+              <p className="text-sm text-muted-foreground text-left leading-relaxed">Download verified academic records</p>
             </div>
           </Button>
         </div>

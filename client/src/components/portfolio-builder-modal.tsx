@@ -101,7 +101,7 @@ export function PortfolioBuilderModal({ open, onOpenChange }: PortfolioBuilderMo
   if (showApiKeyPrompt) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="glassmorphism-strong max-w-md">
+        <DialogContent className="glassmorphism-strong max-w-md bg-background border">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold flex items-center gap-2">
               <Bot className="h-6 w-6" />
@@ -161,7 +161,7 @@ export function PortfolioBuilderModal({ open, onOpenChange }: PortfolioBuilderMo
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="glassmorphism-strong max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="glassmorphism-strong max-w-2xl max-h-[90vh] overflow-y-auto bg-background border">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">AI Portfolio Builder</DialogTitle>
         </DialogHeader>
