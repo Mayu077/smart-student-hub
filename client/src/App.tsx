@@ -9,6 +9,11 @@ import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
 import Activities from "@/pages/activities";
 import Portfolio from "@/pages/portfolio";
+import Courses from "@/pages/courses";
+import Schedule from "@/pages/schedule";
+import Notes from "@/pages/notes";
+import Analytics from "@/pages/analytics";
+import SettingsPage from "@/pages/settings";
 import { GlassmorphismCard } from "@/components/glassmorphism-card";
 import { Button } from "@/components/ui/button";
 import { 
@@ -20,7 +25,7 @@ import {
   StickyNote, 
   UserCircle, 
   BarChart3, 
-  Settings, 
+  Settings as SettingsIcon, 
   Moon, 
   Sun 
 } from "lucide-react";
@@ -38,7 +43,8 @@ function Sidebar() {
     { name: "Notes", href: "/notes", icon: StickyNote, current: location === "/notes" },
     { name: "Portfolio", href: "/portfolio", icon: UserCircle, current: location === "/portfolio" },
     { name: "Analytics", href: "/analytics", icon: BarChart3, current: location === "/analytics" },
-    { name: "Settings", href: "/settings", icon: Settings, current: location === "/settings" },
+    { name: "Settings", href: "/settings", icon: SettingsIcon, current: location === "/settings" },
+
   ];
 
   return (
@@ -107,52 +113,11 @@ function AppContent() {
           <Route path="/" component={Dashboard} />
           <Route path="/activities" component={Activities} />
           <Route path="/portfolio" component={Portfolio} />
-          {/* Placeholder routes for other pages */}
-          <Route path="/courses">
-            <div className="flex items-center justify-center h-full">
-              <GlassmorphismCard className="p-8 text-center">
-                <BookOpen className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-                <h2 className="text-2xl font-bold mb-2">Courses</h2>
-                <p className="text-muted-foreground">Course management coming soon!</p>
-              </GlassmorphismCard>
-            </div>
-          </Route>
-          <Route path="/schedule">
-            <div className="flex items-center justify-center h-full">
-              <GlassmorphismCard className="p-8 text-center">
-                <Calendar className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-                <h2 className="text-2xl font-bold mb-2">Schedule</h2>
-                <p className="text-muted-foreground">Schedule management coming soon!</p>
-              </GlassmorphismCard>
-            </div>
-          </Route>
-          <Route path="/notes">
-            <div className="flex items-center justify-center h-full">
-              <GlassmorphismCard className="p-8 text-center">
-                <StickyNote className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-                <h2 className="text-2xl font-bold mb-2">Notes</h2>
-                <p className="text-muted-foreground">Note taking feature coming soon!</p>
-              </GlassmorphismCard>
-            </div>
-          </Route>
-          <Route path="/analytics">
-            <div className="flex items-center justify-center h-full">
-              <GlassmorphismCard className="p-8 text-center">
-                <BarChart3 className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-                <h2 className="text-2xl font-bold mb-2">Analytics</h2>
-                <p className="text-muted-foreground">Advanced analytics coming soon!</p>
-              </GlassmorphismCard>
-            </div>
-          </Route>
-          <Route path="/settings">
-            <div className="flex items-center justify-center h-full">
-              <GlassmorphismCard className="p-8 text-center">
-                <Settings className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-                <h2 className="text-2xl font-bold mb-2">Settings</h2>
-                <p className="text-muted-foreground">Settings panel coming soon!</p>
-              </GlassmorphismCard>
-            </div>
-          </Route>
+          <Route path="/courses" component={Courses} />
+          <Route path="/schedule" component={Schedule} />
+          <Route path="/notes" component={Notes} />
+          <Route path="/analytics" component={Analytics} />
+          <Route path="/settings" component={SettingsPage} />
           <Route component={NotFound} />
         </Switch>
       </main>

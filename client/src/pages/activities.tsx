@@ -1,196 +1,314 @@
-import { GlassmorphismCard } from "@/components/glassmorphism-card";
-import { ActivityTrackerModal } from "@/components/activity-tracker-modal";
+import React from "react";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
-import { Plus, Search, Filter, Calendar, ExternalLink, CheckCircle, Clock, XCircle } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Calendar, Clock, MapPin, Users, Plus, Filter, Search } from "lucide-react";
 
 export default function Activities() {
-  const [modalOpen, setModalOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [typeFilter, setTypeFilter] = useState("all");
-
-  const { data: activities, isLoading } = useQuery({
-    queryKey: ["/api/activities"],
-  });
-
-  const filteredActivities = activities?.filter((activity: any) => {
-    const matchesSearch = activity.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         activity.provider.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === "all" || activity.status === statusFilter;
-    const matchesType = typeFilter === "all" || activity.type === typeFilter;
-    
-    return matchesSearch && matchesStatus && matchesType;
-  });
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "approved": return <CheckCircle className="h-4 w-4 text-secondary" />;
-      case "pending": return <Clock className="h-4 w-4 text-accent" />;
-      case "rejected": return <XCircle className="h-4 w-4 text-destructive" />;
-      default: return <Clock className="h-4 w-4 text-muted-foreground" />;
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "approved": return "bg-secondary text-secondary-foreground";
-      case "pending": return "bg-accent text-accent-foreground";
-      case "rejected": return "bg-destructive text-destructive-foreground";
-      default: return "bg-muted text-muted-foreground";
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="glassmorphism border-b px-8 py-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold" data-testid="text-activities-title">Activities & Achievements</h1>
-            <p className="text-muted-foreground">Track and manage your academic and extracurricular activities</p>
-          </div>
-          <Button onClick={() => setModalOpen(true)} data-testid="button-add-activity">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Activity
-          </Button>
+    <div className="p-6 space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Activities</h1>
+          <p className="text-muted-foreground">Discover and manage your extracurricular activities</p>
         </div>
-      </header>
-
-      <div className="p-8 space-y-6">
-        {/* Filters */}
-        <GlassmorphismCard className="p-6">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search activities..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-                data-testid="input-search-activities"
-              />
-            </div>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full md:w-[180px]" data-testid="select-status-filter">
-                <SelectValue placeholder="Filter by status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="approved">Approved</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="rejected">Rejected</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger className="w-full md:w-[180px]" data-testid="select-type-filter">
-                <SelectValue placeholder="Filter by type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                <SelectItem value="conference">Conference</SelectItem>
-                <SelectItem value="workshop">Workshop</SelectItem>
-                <SelectItem value="certification">Certification</SelectItem>
-                <SelectItem value="competition">Competition</SelectItem>
-                <SelectItem value="volunteering">Volunteering</SelectItem>
-                <SelectItem value="internship">Internship</SelectItem>
-                <SelectItem value="research">Research</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </GlassmorphismCard>
-
-        {/* Activities Grid */}
-        {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
-              <GlassmorphismCard key={i} className="p-6">
-                <div className="animate-pulse space-y-4">
-                  <div className="h-4 bg-muted rounded"></div>
-                  <div className="h-3 bg-muted rounded w-3/4"></div>
-                  <div className="h-3 bg-muted rounded w-1/2"></div>
-                </div>
-              </GlassmorphismCard>
-            ))}
-          </div>
-        ) : filteredActivities && filteredActivities.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredActivities.map((activity: any, index: number) => (
-              <GlassmorphismCard key={activity.id || index} className="p-6 hover:shadow-lg hover:scale-[1.02] transition-all duration-200">
-                <div className="space-y-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-lg mb-2" data-testid={`text-activity-title-${index}`}>
-                        {activity.title}
-                      </h3>
-                      <p className="text-sm text-muted-foreground mb-2" data-testid={`text-activity-provider-${index}`}>
-                        {activity.provider}
-                      </p>
-                      <Badge variant="outline" className="text-xs mb-2">
-                        {activity.type}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {getStatusIcon(activity.status)}
-                      <Badge className={`text-xs ${getStatusColor(activity.status)}`}>
-                        {activity.status}
-                      </Badge>
-                    </div>
-                  </div>
-
-                  {activity.description && (
-                    <p className="text-sm text-muted-foreground line-clamp-3" data-testid={`text-activity-description-${index}`}>
-                      {activity.description}
-                    </p>
-                  )}
-
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-3 w-3" />
-                      <span data-testid={`text-activity-date-${index}`}>
-                        {activity.startDate ? new Date(activity.startDate).toLocaleDateString() : "No date"}
-                      </span>
-                    </div>
-                    {activity.fileUrl && (
-                      <Button variant="ghost" size="sm" className="h-6 w-6 p-0" data-testid={`button-view-document-${index}`}>
-                        <ExternalLink className="h-3 w-3" />
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </GlassmorphismCard>
-            ))}
-          </div>
-        ) : (
-          <GlassmorphismCard className="p-12 text-center">
-            <div className="max-w-md mx-auto">
-              <div className="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center mx-auto mb-4">
-                <Plus className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2" data-testid="text-no-activities">No activities found</h3>
-              <p className="text-muted-foreground mb-4">
-                {searchTerm || statusFilter !== "all" || typeFilter !== "all" 
-                  ? "Try adjusting your filters to see more activities."
-                  : "Start building your portfolio by adding your first activity or achievement."
-                }
-              </p>
-              <Button onClick={() => setModalOpen(true)} data-testid="button-add-first-activity">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Your First Activity
-              </Button>
-            </div>
-          </GlassmorphismCard>
-        )}
+        <Button>
+          <Plus className="h-4 w-4 mr-2" />
+          Add New Activity
+        </Button>
       </div>
 
-      <ActivityTrackerModal 
-        open={modalOpen} 
-        onOpenChange={setModalOpen} 
-      />
+      <div className="flex items-center space-x-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <input
+            type="search"
+            placeholder="Search activities..."
+            className="w-full bg-background pl-8 h-9 rounded-md border border-input px-3 py-1"
+          />
+        </div>
+        <Button variant="outline" size="sm">
+          <Filter className="h-4 w-4 mr-2" />
+          Filter
+        </Button>
+      </div>
+
+      <Tabs defaultValue="upcoming">
+        <TabsList>
+          <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
+          <TabsTrigger value="my-activities">My Activities</TabsTrigger>
+          <TabsTrigger value="discover">Discover</TabsTrigger>
+          <TabsTrigger value="past">Past</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="upcoming" className="space-y-4 mt-6">
+          <Card className="p-6">
+            <div className="flex justify-between">
+              <div className="flex space-x-4">
+                <div className="w-16 h-16 rounded-md bg-primary/10 flex items-center justify-center">
+                  <Users className="h-8 w-8 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg">Student Government Meeting</h3>
+                  <div className="flex items-center text-muted-foreground mt-1">
+                    <Calendar className="h-4 w-4 mr-1" />
+                    <span className="text-sm mr-3">Tomorrow, 3:00 PM</span>
+                    <Clock className="h-4 w-4 mr-1" />
+                    <span className="text-sm mr-3">2 hours</span>
+                    <MapPin className="h-4 w-4 mr-1" />
+                    <span className="text-sm">Student Center, Room 302</span>
+                  </div>
+                  <div className="flex items-center mt-2">
+                    <Badge variant="outline" className="mr-2">Leadership</Badge>
+                    <Badge variant="outline">Campus Involvement</Badge>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-start space-x-2">
+                <Button variant="outline" size="sm">Details</Button>
+                <Button size="sm">RSVP</Button>
+              </div>
+            </div>
+          </Card>
+          
+          <Card className="p-6">
+            <div className="flex justify-between">
+              <div className="flex space-x-4">
+                <div className="w-16 h-16 rounded-md bg-blue-500/10 flex items-center justify-center">
+                  <Users className="h-8 w-8 text-blue-500" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg">Debate Club Practice</h3>
+                  <div className="flex items-center text-muted-foreground mt-1">
+                    <Calendar className="h-4 w-4 mr-1" />
+                    <span className="text-sm mr-3">Friday, 5:00 PM</span>
+                    <Clock className="h-4 w-4 mr-1" />
+                    <span className="text-sm mr-3">1.5 hours</span>
+                    <MapPin className="h-4 w-4 mr-1" />
+                    <span className="text-sm">Liberal Arts Building, Room 105</span>
+                  </div>
+                  <div className="flex items-center mt-2">
+                    <Badge variant="outline" className="mr-2">Public Speaking</Badge>
+                    <Badge variant="outline">Academic</Badge>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-start space-x-2">
+                <Button variant="outline" size="sm">Details</Button>
+                <Button size="sm">RSVP</Button>
+              </div>
+            </div>
+          </Card>
+          
+          <Card className="p-6">
+            <div className="flex justify-between">
+              <div className="flex space-x-4">
+                <div className="w-16 h-16 rounded-md bg-green-500/10 flex items-center justify-center">
+                  <Users className="h-8 w-8 text-green-500" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg">Environmental Club Cleanup</h3>
+                  <div className="flex items-center text-muted-foreground mt-1">
+                    <Calendar className="h-4 w-4 mr-1" />
+                    <span className="text-sm mr-3">Saturday, 10:00 AM</span>
+                    <Clock className="h-4 w-4 mr-1" />
+                    <span className="text-sm mr-3">3 hours</span>
+                    <MapPin className="h-4 w-4 mr-1" />
+                    <span className="text-sm">Campus Lake</span>
+                  </div>
+                  <div className="flex items-center mt-2">
+                    <Badge variant="outline" className="mr-2">Volunteer</Badge>
+                    <Badge variant="outline">Environmental</Badge>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-start space-x-2">
+                <Button variant="outline" size="sm">Details</Button>
+                <Button size="sm">RSVP</Button>
+              </div>
+            </div>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="my-activities" className="space-y-4 mt-6">
+          <Card className="p-6">
+            <div className="flex justify-between">
+              <div className="flex space-x-4">
+                <div className="w-16 h-16 rounded-md bg-purple-500/10 flex items-center justify-center">
+                  <Users className="h-8 w-8 text-purple-500" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg">Chess Club</h3>
+                  <p className="text-muted-foreground mt-1">Weekly meetings on Tuesdays at 7:00 PM</p>
+                  <div className="flex items-center mt-2">
+                    <Badge className="bg-green-500 hover:bg-green-600 mr-2">Active Member</Badge>
+                    <Badge variant="outline">2 Years</Badge>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-start space-x-2">
+                <Button variant="outline" size="sm">View Details</Button>
+              </div>
+            </div>
+          </Card>
+          
+          <Card className="p-6">
+            <div className="flex justify-between">
+              <div className="flex space-x-4">
+                <div className="w-16 h-16 rounded-md bg-amber-500/10 flex items-center justify-center">
+                  <Users className="h-8 w-8 text-amber-500" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg">Student Newspaper</h3>
+                  <p className="text-muted-foreground mt-1">Weekly meetings on Wednesdays at 6:00 PM</p>
+                  <div className="flex items-center mt-2">
+                    <Badge className="bg-green-500 hover:bg-green-600 mr-2">Editor</Badge>
+                    <Badge variant="outline">1 Year</Badge>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-start space-x-2">
+                <Button variant="outline" size="sm">View Details</Button>
+              </div>
+            </div>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="discover" className="mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <Card className="p-4">
+              <div className="w-full h-32 bg-blue-500/10 rounded-md flex items-center justify-center mb-4">
+                <Users className="h-12 w-12 text-blue-500" />
+              </div>
+              <h3 className="font-semibold">Photography Club</h3>
+              <p className="text-sm text-muted-foreground mt-1">Learn photography skills and participate in campus photo contests</p>
+              <div className="flex items-center mt-2">
+                <Badge variant="outline" className="mr-2">Arts</Badge>
+                <Badge variant="outline">Creative</Badge>
+              </div>
+              <Button className="w-full mt-4">Join Club</Button>
+            </Card>
+            
+            <Card className="p-4">
+              <div className="w-full h-32 bg-green-500/10 rounded-md flex items-center justify-center mb-4">
+                <Users className="h-12 w-12 text-green-500" />
+              </div>
+              <h3 className="font-semibold">Hiking Club</h3>
+              <p className="text-sm text-muted-foreground mt-1">Explore local trails and enjoy nature with fellow students</p>
+              <div className="flex items-center mt-2">
+                <Badge variant="outline" className="mr-2">Outdoor</Badge>
+                <Badge variant="outline">Fitness</Badge>
+              </div>
+              <Button className="w-full mt-4">Join Club</Button>
+            </Card>
+            
+            <Card className="p-4">
+              <div className="w-full h-32 bg-purple-500/10 rounded-md flex items-center justify-center mb-4">
+                <Users className="h-12 w-12 text-purple-500" />
+              </div>
+              <h3 className="font-semibold">Coding Club</h3>
+              <p className="text-sm text-muted-foreground mt-1">Build projects, learn new technologies, and participate in hackathons</p>
+              <div className="flex items-center mt-2">
+                <Badge variant="outline" className="mr-2">Technology</Badge>
+                <Badge variant="outline">Academic</Badge>
+              </div>
+              <Button className="w-full mt-4">Join Club</Button>
+            </Card>
+            
+            <Card className="p-4">
+              <div className="w-full h-32 bg-red-500/10 rounded-md flex items-center justify-center mb-4">
+                <Users className="h-12 w-12 text-red-500" />
+              </div>
+              <h3 className="font-semibold">Dance Team</h3>
+              <p className="text-sm text-muted-foreground mt-1">Learn various dance styles and perform at campus events</p>
+              <div className="flex items-center mt-2">
+                <Badge variant="outline" className="mr-2">Performing Arts</Badge>
+                <Badge variant="outline">Fitness</Badge>
+              </div>
+              <Button className="w-full mt-4">Join Team</Button>
+            </Card>
+            
+            <Card className="p-4">
+              <div className="w-full h-32 bg-amber-500/10 rounded-md flex items-center justify-center mb-4">
+                <Users className="h-12 w-12 text-amber-500" />
+              </div>
+              <h3 className="font-semibold">Volunteer Corps</h3>
+              <p className="text-sm text-muted-foreground mt-1">Participate in community service projects and make a difference</p>
+              <div className="flex items-center mt-2">
+                <Badge variant="outline" className="mr-2">Community Service</Badge>
+                <Badge variant="outline">Leadership</Badge>
+              </div>
+              <Button className="w-full mt-4">Join Corps</Button>
+            </Card>
+            
+            <Card className="p-4">
+              <div className="w-full h-32 bg-indigo-500/10 rounded-md flex items-center justify-center mb-4">
+                <Users className="h-12 w-12 text-indigo-500" />
+              </div>
+              <h3 className="font-semibold">Music Ensemble</h3>
+              <p className="text-sm text-muted-foreground mt-1">Play instruments or sing with other talented musicians</p>
+              <div className="flex items-center mt-2">
+                <Badge variant="outline" className="mr-2">Arts</Badge>
+                <Badge variant="outline">Performing</Badge>
+              </div>
+              <Button className="w-full mt-4">Join Ensemble</Button>
+            </Card>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="past" className="space-y-4 mt-6">
+          <Card className="p-6">
+            <div className="flex justify-between">
+              <div className="flex space-x-4">
+                <div className="w-16 h-16 rounded-md bg-gray-500/10 flex items-center justify-center">
+                  <Users className="h-8 w-8 text-gray-500" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg">Campus Hackathon</h3>
+                  <div className="flex items-center text-muted-foreground mt-1">
+                    <Calendar className="h-4 w-4 mr-1" />
+                    <span className="text-sm mr-3">Last Month</span>
+                    <Badge variant="outline">Completed</Badge>
+                  </div>
+                  <div className="flex items-center mt-2">
+                    <Badge variant="outline" className="mr-2">Technology</Badge>
+                    <Badge variant="outline">Competition</Badge>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-start space-x-2">
+                <Button variant="outline" size="sm">View Certificate</Button>
+              </div>
+            </div>
+          </Card>
+          
+          <Card className="p-6">
+            <div className="flex justify-between">
+              <div className="flex space-x-4">
+                <div className="w-16 h-16 rounded-md bg-gray-500/10 flex items-center justify-center">
+                  <Users className="h-8 w-8 text-gray-500" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg">Charity Fun Run</h3>
+                  <div className="flex items-center text-muted-foreground mt-1">
+                    <Calendar className="h-4 w-4 mr-1" />
+                    <span className="text-sm mr-3">2 Months Ago</span>
+                    <Badge variant="outline">Completed</Badge>
+                  </div>
+                  <div className="flex items-center mt-2">
+                    <Badge variant="outline" className="mr-2">Volunteer</Badge>
+                    <Badge variant="outline">Fitness</Badge>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-start space-x-2">
+                <Button variant="outline" size="sm">View Photos</Button>
+              </div>
+            </div>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

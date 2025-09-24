@@ -201,20 +201,34 @@ export function ActivityTrackerModal({ open, onOpenChange }: ActivityTrackerModa
               )}
             />
 
-            <div>
-              <Label className="text-sm font-medium">Upload Certificate/Proof</Label>
-              <div className="border-2 border-dashed border-border rounded-lg p-6 text-center mt-2">
-                <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">Click to upload or drag and drop</p>
-                <p className="text-xs text-muted-foreground mt-1">PDF, PNG, JPG up to 10MB</p>
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  className="mt-3"
-                  onClick={() => document.getElementById('file-upload')?.click()}
-                >
-                  Choose File
-                </Button>
+            <div className="relative">
+              <Label className="text-lg font-semibold text-primary">Upload Certificate/Proof</Label>
+              <div className="border-2 border-dashed border-primary/50 rounded-xl p-8 text-center mt-3 bg-primary/5 hover:bg-primary/10 transition-all hover:border-primary cursor-pointer shadow-sm hover:shadow-md">
+                <div className="absolute -top-3 -right-3 bg-primary text-white rounded-full px-3 py-1 text-xs font-bold">
+                  IMPORTANT
+                </div>
+                <Upload className="h-12 w-12 text-primary mx-auto mb-3 animate-pulse" />
+                <h3 className="text-base font-medium mb-2">Document Verification Required</h3>
+                <p className="text-sm text-muted-foreground">Upload your certificate or proof for verification</p>
+                <p className="text-xs text-muted-foreground mt-1 mb-3">PDF, PNG, JPG up to 10MB</p>
+                <div className="flex justify-center gap-3">
+                  <Button 
+                    type="button" 
+                    variant="default" 
+                    className="mt-2 px-6 py-2 bg-primary hover:bg-primary/90"
+                    onClick={() => document.getElementById('file-upload')?.click()}
+                  >
+                    Choose File
+                  </Button>
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    className="mt-2 px-6 py-2 border-primary text-primary hover:bg-primary/10"
+                    onClick={() => document.getElementById('file-upload-camera')?.click()}
+                  >
+                    Take Photo
+                  </Button>
+                </div>
                 <input 
                   id="file-upload"
                   type="file" 
@@ -222,6 +236,16 @@ export function ActivityTrackerModal({ open, onOpenChange }: ActivityTrackerModa
                   accept=".pdf,.png,.jpg,.jpeg"
                   data-testid="input-file-upload"
                 />
+                <input 
+                  id="file-upload-camera"
+                  type="file" 
+                  className="hidden" 
+                  accept="image/*"
+                  capture="environment"
+                />
+                <p className="text-xs text-primary mt-4 font-medium">
+                  * Documents will be verified by faculty before being added to your portfolio
+                </p>
               </div>
             </div>
 

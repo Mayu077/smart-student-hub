@@ -1,4 +1,5 @@
-import { GlassmorphismCard } from "@/components/glassmorphism-card";
+import { Card, CardContent } from "@/components/ui/card";
+import React from "react";
 import { PortfolioBuilderModal } from "@/components/portfolio-builder-modal";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -53,20 +54,20 @@ export default function Portfolio() {
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
-              <GlassmorphismCard key={i} className="p-6">
+              <Card key={i} className="p-6">
                 <div className="animate-pulse space-y-4">
                   <div className="h-6 bg-muted rounded"></div>
                   <div className="h-4 bg-muted rounded w-3/4"></div>
                   <div className="h-4 bg-muted rounded w-1/2"></div>
                   <div className="h-32 bg-muted rounded"></div>
                 </div>
-              </GlassmorphismCard>
+              </Card>
             ))}
           </div>
-        ) : portfolios && portfolios.length > 0 ? (
+        ) : portfolios && Array.isArray(portfolios) && portfolios.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {portfolios.map((portfolio: any, index: number) => (
-              <GlassmorphismCard key={portfolio.id || index} className="p-6 hover:shadow-lg hover:scale-[1.02] transition-all duration-200">
+              <Card key={portfolio.id || index} className="p-6 hover:shadow-lg hover:scale-[1.02] transition-all duration-200">
                 <div className="space-y-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -129,11 +130,11 @@ export default function Portfolio() {
                     )}
                   </div>
                 </div>
-              </GlassmorphismCard>
+              </Card>
             ))}
           </div>
         ) : (
-          <GlassmorphismCard className="p-12 text-center">
+          <Card className="p-12 text-center">
             <div className="max-w-md mx-auto">
               <div className="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center mx-auto mb-4">
                 <Bot className="h-8 w-8 text-white" />
@@ -147,7 +148,7 @@ export default function Portfolio() {
                 Create Your First Portfolio
               </Button>
             </div>
-          </GlassmorphismCard>
+          </Card>
         )}
       </div>
 

@@ -1,4 +1,6 @@
+import { Card, CardContent } from "@/components/ui/card";
 import { GlassmorphismCard } from "@/components/glassmorphism-card";
+import React from "react";
 import { ProgressCircle } from "@/components/progress-circle";
 import { ActivityTrackerModal } from "@/components/activity-tracker-modal";
 import { PortfolioBuilderModal } from "@/components/portfolio-builder-modal";
@@ -73,7 +75,7 @@ export default function Dashboard() {
           <div>
             <h1 className="text-2xl font-bold" data-testid="text-dashboard-title">Dashboard</h1>
             <p className="text-muted-foreground">
-              Welcome back, <span data-testid="text-user-name">{user?.firstName || "Alex"}</span>! Here's your academic overview.
+              Welcome back, <span data-testid="text-user-name">{(user as any)?.firstName || "Alex"}</span>! Here's your academic overview.
             </p>
           </div>
           <div className="flex items-center gap-4">
@@ -92,77 +94,77 @@ export default function Dashboard() {
         {/* Stats Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Current Course Progress */}
-          <GlassmorphismCard className="lg:col-span-2 p-6">
+          <Card className="lg:col-span-2 p-6">
             <div className="flex items-start justify-between mb-4">
               <div>
                 <h3 className="text-lg font-semibold mb-2" data-testid="text-current-course">
-                  {stats?.currentCourse?.title || "No active course"}
+                  {(stats as any)?.currentCourse?.title || "No active course"}
                 </h3>
                 <p className="text-sm text-muted-foreground mb-4" data-testid="text-course-progress">
-                  {stats?.currentCourse?.progress || 0}% Complete
+                  {(stats as any)?.currentCourse?.progress || 0}% Complete
                 </p>
                 <div className="w-full bg-muted rounded-full h-2 mb-4">
                   <div 
                     className="bg-gradient-to-r from-primary to-secondary h-2 rounded-full transition-all duration-500"
-                    style={{ width: `${stats?.currentCourse?.progress || 0}%` }}
+                    style={{ width: `${(stats as any)?.currentCourse?.progress || 0}%` }}
                   ></div>
                 </div>
                 <Button 
-                  disabled={!stats?.currentCourse}
+                  disabled={!(stats as any)?.currentCourse}
                   data-testid="button-continue-lesson"
                 >
                   Continue Lesson
                 </Button>
               </div>
             </div>
-          </GlassmorphismCard>
+          </Card>
 
           {/* Study Hours Progress */}
-          <GlassmorphismCard className="p-6 flex flex-col items-center justify-center">
-            <ProgressCircle percentage={stats?.studyHoursPercentage || 0}>
+          <Card className="p-6 flex flex-col items-center justify-center">
+            <ProgressCircle percentage={(stats as any)?.studyHoursPercentage || 0}>
               <span className="text-xl font-bold" data-testid="text-study-hours-percentage">
-                {stats?.studyHoursPercentage || 0}%
+                {(stats as any)?.studyHoursPercentage || 0}%
               </span>
               <span className="text-xs text-muted-foreground">Study Hours</span>
             </ProgressCircle>
             <p className="text-sm text-center text-muted-foreground mt-4" data-testid="text-study-hours-week">
-              {stats?.studyHoursWeek || "0h"} this week
+              {(stats as any)?.studyHoursWeek || "0h"} this week
             </p>
-          </GlassmorphismCard>
+          </Card>
 
           {/* Quick Stats */}
-          <GlassmorphismCard className="p-6">
+          <Card className="p-6">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Assignments</span>
                 <span className="font-semibold" data-testid="text-assignments">
-                  {stats?.assignments?.completed || 0}/{stats?.assignments?.total || 0}
+                  {(stats as any)?.assignments?.completed || 0}/{(stats as any)?.assignments?.total || 0}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">GPA</span>
-                <span className="font-semibold" data-testid="text-gpa">{user?.gpa || "0.0"}</span>
+                <span className="font-semibold" data-testid="text-gpa">{(user as any)?.gpa || "0.0"}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Attendance</span>
                 <span className="font-semibold text-secondary" data-testid="text-attendance">
-                  {user?.attendance || 0}%
+                  {(user as any)?.attendance || 0}%
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Credits</span>
                 <span className="font-semibold" data-testid="text-credits">
-                  {user?.completedCredits || 0}/{user?.totalCredits || 0}
+                  {(user as any)?.completedCredits || 0}/{(user as any)?.totalCredits || 0}
                 </span>
               </div>
             </div>
-          </GlassmorphismCard>
+          </Card>
         </div>
 
         {/* Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Upcoming Tasks */}
-          <GlassmorphismCard className="p-6">
+          <Card className="p-6">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-semibold">Upcoming Tasks</h3>
               <Button variant="ghost" className="text-primary font-medium text-sm" data-testid="button-view-all-tasks">
@@ -171,7 +173,7 @@ export default function Dashboard() {
             </div>
 
             <div className="space-y-4">
-              {tasks && tasks.length > 0 ? (
+              {tasks && Array.isArray(tasks) && tasks.length > 0 ? (
                 tasks.slice(0, 3).map((task: any, index: number) => (
                   <div key={task.id || index} className="activity-item flex items-center gap-4 p-3 rounded-lg border border-border/30 hover:border-border/60 transition-colors">
                     <Button
@@ -210,10 +212,10 @@ export default function Dashboard() {
                 </div>
               )}
             </div>
-          </GlassmorphismCard>
+          </Card>
 
           {/* Weekly Progress Chart */}
-          <GlassmorphismCard className="p-6">
+          <Card className="p-6">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-semibold">Weekly Progress</h3>
               <select className="bg-transparent border border-border rounded-lg px-3 py-1 text-sm" data-testid="select-time-period">
@@ -267,11 +269,11 @@ export default function Dashboard() {
                 <p className="text-xs text-muted-foreground">Avg Score</p>
               </div>
             </div>
-          </GlassmorphismCard>
+          </Card>
         </div>
 
         {/* Recent Activities */}
-        <GlassmorphismCard className="p-6">
+        <Card className="p-6">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold">Recent Activities & Achievements</h3>
             <Button onClick={() => setActivityModalOpen(true)} data-testid="button-add-activity">
@@ -281,7 +283,7 @@ export default function Dashboard() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {activities && activities.length > 0 ? (
+            {activities && Array.isArray(activities) && activities.length > 0 ? (
               activities.slice(0, 6).map((activity: any, index: number) => (
                 <div key={activity.id || index} className="activity-item border border-border/50 rounded-xl p-4 hover:shadow-lg hover:border-border transition-all">
                   <div className="flex items-start gap-3">
@@ -314,13 +316,12 @@ export default function Dashboard() {
               </div>
             )}
           </div>
-        </GlassmorphismCard>
+        </Card>
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <GlassmorphismCard
-            variant="ghost"
-            className="glassmorphism rounded-xl p-6 text-left hover:shadow-lg transition-all group h-auto justify-start flex-col items-start min-h-[140px]"
+          <Card
+            className="rounded-xl p-6 text-left hover:shadow-lg transition-all group h-auto justify-start flex-col items-start min-h-[140px]"
             onClick={() => setPortfolioModalOpen(true)}
             data-testid="button-generate-portfolio"
           >
@@ -331,11 +332,10 @@ export default function Dashboard() {
               <h4 className="font-semibold mb-2 text-left">Generate Portfolio</h4>
               <p className="text-sm text-muted-foreground text-left leading-relaxed">Create AI-powered portfolio from your activities</p>
             </div>
-          </GlassmorphismCard>
+          </Card>
 
-          <GlassmorphismCard
-            variant="ghost"
-            className="glassmorphism rounded-xl p-6 text-left hover:shadow-lg transition-all group h-auto justify-start flex-col items-start min-h-[140px]"
+          <Card
+            className="rounded-xl p-6 text-left hover:shadow-lg transition-all group h-auto justify-start flex-col items-start min-h-[140px]"
             data-testid="button-view-analytics"
           >
             <div className="w-full">
@@ -345,11 +345,10 @@ export default function Dashboard() {
               <h4 className="font-semibold mb-2 text-left">View Analytics</h4>
               <p className="text-sm text-muted-foreground text-left leading-relaxed">Detailed insights into your academic progress</p>
             </div>
-          </GlassmorphismCard>
+          </Card>
 
-          <GlassmorphismCard
-            variant="ghost"
-            className="glassmorphism rounded-xl p-6 text-left hover:shadow-lg transition-all group h-auto justify-start flex-col items-start min-h-[140px]"
+          <Card
+            className="rounded-xl p-6 text-left hover:shadow-lg transition-all group h-auto justify-start flex-col items-start min-h-[140px]"
             data-testid="button-schedule-event"
           >
             <div className="w-full">
@@ -359,11 +358,10 @@ export default function Dashboard() {
               <h4 className="font-semibold mb-2 text-left">Schedule Event</h4>
               <p className="text-sm text-muted-foreground text-left leading-relaxed">Add upcoming conferences or workshops</p>
             </div>
-          </GlassmorphismCard>
+          </Card>
 
-          <GlassmorphismCard
-            variant="ghost"
-            className="glassmorphism rounded-xl p-6 text-left hover:shadow-lg transition-all group h-auto justify-start flex-col items-start min-h-[140px]"
+          <Card
+            className="rounded-xl p-6 text-left hover:shadow-lg transition-all group h-auto justify-start flex-col items-start min-h-[140px]"
             data-testid="button-export-records"
           >
             <div className="w-full">
@@ -373,7 +371,7 @@ export default function Dashboard() {
               <h4 className="font-semibold mb-2 text-left">Export Records</h4>
               <p className="text-sm text-muted-foreground text-left leading-relaxed">Download verified academic records</p>
             </div>
-          </GlassmorphismCard>
+          </Card>
         </div>
       </div>
 
