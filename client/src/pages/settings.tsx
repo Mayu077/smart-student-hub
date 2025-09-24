@@ -12,9 +12,22 @@ import {
   Globe, LogOut, Save, Upload, Trash, Mail
 } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
+import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
 
 export default function Settings() {
   const { theme, setTheme } = useTheme();
+  const { toast } = useToast();
+  const [, setLocation] = useLocation();
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    setLocation("/login");
+    toast({
+      title: "Logged Out",
+      description: "You have been successfully logged out.",
+    });
+  };
 
   return (
     <div className="p-6 space-y-6">
@@ -406,7 +419,11 @@ export default function Settings() {
       </Tabs>
 
       <div className="flex justify-between items-center pt-4">
-        <Button variant="outline" className="flex items-center gap-2 text-destructive">
+        <Button 
+          variant="outline" 
+          className="flex items-center gap-2 text-destructive"
+          onClick={handleLogout}
+        >
           <LogOut className="h-4 w-4" />
           Sign Out
         </Button>

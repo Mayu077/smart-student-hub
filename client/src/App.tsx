@@ -14,6 +14,9 @@ import Schedule from "@/pages/schedule";
 import Notes from "@/pages/notes";
 import Analytics from "@/pages/analytics";
 import SettingsPage from "@/pages/settings";
+import LoginPage from "@/pages/login";
+import FacultyDashboard from "@/pages/faculty-dashboard";
+import AdminDashboard from "@/pages/admin-dashboard";
 import { GlassmorphismCard } from "@/components/glassmorphism-card";
 import { Button } from "@/components/ui/button";
 import { 
@@ -30,10 +33,19 @@ import {
   Sun 
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
+import { useEffect, useState } from "react";
 
 function Sidebar() {
   const [location] = useLocation();
   const { theme, setTheme } = useTheme();
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+  }, []);
 
   const navigation = [
     { name: "Dashboard", href: "/", icon: LayoutDashboard, current: location === "/" },
@@ -83,11 +95,17 @@ function Sidebar() {
       <div className="border-t pt-4">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
-            <span className="text-sm font-bold text-white">AJ</span>
+            <span className="text-sm font-bold text-white">
+              {user ? user.name.split(' ').map((n: string) => n[0]).join('') : 'AJ'}
+            </span>
           </div>
           <div className="flex-1">
-            <p className="font-medium text-sm" data-testid="text-user-name">Alex Johnson</p>
-            <p className="text-xs text-muted-foreground" data-testid="text-student-id">ID: 2024CS001</p>
+            <p className="font-medium text-sm" data-testid="text-user-name">
+              {user ? user.name : 'Alex Johnson'}
+            </p>
+            <p className="text-xs text-muted-foreground" data-testid="text-student-id">
+              ID: {user ? user.id : '2024CS001'}
+            </p>
           </div>
         </div>
         <Button
@@ -104,24 +122,71 @@ function Sidebar() {
   );
 }
 
+function AuthGuard({ children }: { children: React.ReactNode }) {
+  const [, setLocation] = useLocation();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (!userData) {
+      setLocation("/login");
+      setIsAuthenticated(false);
+    } else {
+      setIsAuthenticated(true);
+    }
+  }, [setLocation]);
+
+  if (isAuthenticated === null) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null;
+  }
+
+  return <>{children}</>;
+}
 function AppContent() {
+  const [location] = useLocation();
+
+  // Public routes that don't require authentication
+  if (location === "/login") {
+    return <LoginPage />;
+  }
+
+  // Faculty and admin routes
+  if (location === "/faculty-dashboard") {
+    return <FacultyDashboard />;
+  }
+
+  if (location === "/admin-dashboard") {
+    return <AdminDashboard />;
+  }
+
+  // Protected student routes
   return (
-    <div className="flex h-screen overflow-hidden">
-      <Sidebar />
-      <main className="flex-1 overflow-auto">
-        <Switch>
-          <Route path="/" component={Dashboard} />
-          <Route path="/activities" component={Activities} />
-          <Route path="/portfolio" component={Portfolio} />
-          <Route path="/courses" component={Courses} />
-          <Route path="/schedule" component={Schedule} />
-          <Route path="/notes" component={Notes} />
-          <Route path="/analytics" component={Analytics} />
-          <Route path="/settings" component={SettingsPage} />
-          <Route component={NotFound} />
-        </Switch>
-      </main>
-    </div>
+    <AuthGuard>
+      <div className="flex h-screen overflow-hidden">
+        <Sidebar />
+        <main className="flex-1 overflow-auto">
+          <Switch>
+            <Route path="/" component={Dashboard} />
+            <Route path="/activities" component={Activities} />
+            <Route path="/portfolio" component={Portfolio} />
+            <Route path="/courses" component={Courses} />
+            <Route path="/schedule" component={Schedule} />
+            <Route path="/notes" component={Notes} />
+            <Route path="/analytics" component={Analytics} />
+            <Route path="/settings" component={SettingsPage} />
+            <Route component={NotFound} />
+          </Switch>
+        </main>
+      </div>
+    </AuthGuard>
   );
 }
 

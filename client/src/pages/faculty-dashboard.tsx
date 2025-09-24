@@ -16,7 +16,7 @@ import {
   AlertTriangle,
   LogOut
 } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 // Mock data for pending document verifications
 const mockPendingDocuments = [
@@ -97,7 +97,7 @@ const mockStudentPerformance = [
 ];
 
 export default function FacultyDashboard() {
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const { toast } = useToast();
   const [verifiedDocuments, setVerifiedDocuments] = useState<any[]>([]);
   const [pendingDocuments, setPendingDocuments] = useState(mockPendingDocuments);

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GraduationCap, Building, User } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 // Mock data for testing
 const mockStudents = [
@@ -24,9 +24,24 @@ const mockAdmins = [
 ];
 
 export default function LoginPage() {
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const { toast } = useToast();
   
+  // Redirect if already logged in
+  React.useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      const user = JSON.parse(userData);
+      if (user.role === "faculty") {
+        setLocation("/faculty-dashboard");
+      } else if (user.role === "admin") {
+        setLocation("/admin-dashboard");
+      } else {
+        setLocation("/");
+      }
+    }
+  }, [setLocation]);
+
   // Student login state
   const [studentCredentials, setStudentCredentials] = useState({
     abcId: "",

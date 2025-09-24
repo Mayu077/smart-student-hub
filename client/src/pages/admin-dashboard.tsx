@@ -20,7 +20,7 @@ import {
   TrendingUp,
   Search
 } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 // Mock data for analytics
 const mockAnalyticsData = {
@@ -106,25 +106,30 @@ const mockReports = [
 ];
 
 export default function AdminDashboard() {
-  const [location, navigate] = useLocation();
+  const [location, setLocation] = useLocation();
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [reportType, setReportType] = useState("all");
 
   // Check if user is logged in as admin
   useEffect(() => {
-    const userType = localStorage.getItem("userType");
-    const isLoggedIn = localStorage.getItem("isLoggedIn");
+    const userData = localStorage.getItem("user");
     
-    if (!isLoggedIn || userType !== "admin") {
-      navigate("/login");
+    if (!userData) {
+      setLocation("/login");
+      return;
+    }
+    
+    const user = JSON.parse(userData);
+    if (user.role !== "admin") {
+      setLocation("/login");
       toast({
         title: "Access Denied",
         description: "Please login as an administrator to access this page.",
         variant: "destructive",
       });
     }
-  }, []);
+  }, [setLocation, toast]);
 
   // Filter reports based on search and type
   const filteredReports = mockReports.filter(report => {
@@ -152,9 +157,8 @@ export default function AdminDashboard() {
 
   // Handle logout
   const handleLogout = () => {
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("userType");
-    navigate("/login");
+    localStorage.removeItem("user");
+    setLocation("/login");
     toast({
       title: "Logged Out",
       description: "You have been logged out successfully.",
