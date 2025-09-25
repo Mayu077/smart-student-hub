@@ -1,7 +1,8 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { getStorage } from "./storage";
-import { generatePortfolio, enhanceActivityDescription } from "./services/openai";
+import { generatePortfolio, enhanceActivityDescription, type PortfolioGenerationRequest } from "./services/openai";
+
 import { 
   insertActivitySchema, 
   insertCourseSchema, 
@@ -247,6 +248,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching portfolios:", error);
       res.status(500).json({ message: "Failed to fetch portfolios" });
+    }
+  });
+  
+  // Portfolio generation endpoint
+  app.post("/api/generate-portfolio", async (req, res) => {
+    try {
+      const { focus, targetField, careerGoals, skills, achievements, educationLevel, userData, activities } = req.body.content;
+      
+      // Format the data for the OpenAI service
+      const portfolioRequest: PortfolioGenerationRequest = {
+        focus,
+        targetField,
+        additionalContext: `Career Goals: ${careerGoals}\nSkills: ${skills}\nAchievements: ${achievements}\nEducation Level: ${educationLevel}`,
+        studentData: {
+          name: userData.name || "Student",
+          studentId: userData.id || "ID-12345",
+          gpa: userData.gpa || "3.5",
+          activities: activities || [],
+          courses: userData.courses || [],
+          achievements: achievements.split(',').map((a: string) => ({ title: a.trim() }))
+        }
+      };
+      
+      // Generate the portfolio
+      const generatedPortfolio = await generatePortfolio(portfolioRequest);
+      
+      // Return the generated content
+      res.json({ 
+        success: true,
+        content: generatedPortfolio.fullContent
+      });
+    } catch (error) {
+      console.error("Error generating portfolio:", error);
+      res.status(500).json({ 
+        success: false,
+        message: "Failed to generate portfolio",
+        error: error instanceof Error ? error.message : "Unknown error"
+      });
     }
   });
 
